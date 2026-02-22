@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Color Name - Identify Any Color</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#1a1a2e;color:#e0e0e0;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+.container{max-width:800px;width:100%;padding:20px}
+h1{text-align:center;font-size:2rem;margin:30px 0 8px;background:linear-gradient(135deg,#7f5af0,#2cb67d);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sub{text-align:center;color:#94a1b2;margin-bottom:30px;font-size:.95rem}
+.card{background:#16213e;border-radius:16px;padding:24px;margin-bottom:24px;border:1px solid #0f3460}
+.irow{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.irow input[type="text"]{flex:1;min-width:200px;padding:12px 16px;border-radius:10px;border:1px solid #0f3460;background:#1a1a2e;color:#e0e0e0;font-size:1rem;outline:none;transition:border-color .2s}
+.irow input[type="text"]:focus{border-color:#7f5af0}
+.irow input[type="color"]{width:50px;height:46px;border:none;border-radius:10px;cursor:pointer;background:transparent;padding:0}
+.irow input[type="color"]::-webkit-color-swatch-wrapper{padding:2px}
+.irow input[type="color"]::-webkit-color-swatch{border-radius:8px;border:2px solid #0f3460}
+.btn{padding:12px 24px;border-radius:10px;border:none;background:linear-gradient(135deg,#7f5af0,#6c47d9);color:#fff;font-size:1rem;cursor:pointer;transition:transform .15s,box-shadow .15s;font-weight:600}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 15px rgba(127,90,240,.4)}
+.preview{width:100%;height:160px;border-radius:12px;margin-bottom:20px;position:relative;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.preview .lbl{position:absolute;bottom:0;left:0;right:0;padding:12px 16px;background:linear-gradient(transparent,rgba(0,0,0,.7));font-size:.85rem;display:flex;justify-content:space-between}
+.rname{font-size:1.8rem;font-weight:700;text-align:center;margin-bottom:4px}
+.rhex{text-align:center;color:#94a1b2;margin-bottom:16px;font-family:monospace}
+.rmeta{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:8px}
+.tag{background:#1a1a2e;padding:6px 14px;border-radius:20px;font-size:.8rem;color:#94a1b2}
+.simh3{font-size:1rem;color:#94a1b2;margin:20px 0 12px}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.sc{background:#1a1a2e;border-radius:10px;overflow:hidden;cursor:pointer;transition:transform .15s;border:1px solid transparent}
+.sc:hover{transform:translateY(-2px);border-color:#7f5af0}
+.ss{height:60px}
+.si{padding:8px 10px}
+.si .n{font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.si .h{font-size:.7rem;color:#94a1b2;font-family:monospace}
+.si .d{font-size:.65rem;color:#7f5af0}
+.hh3{font-size:1rem;color:#94a1b2;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.hh3 button{background:none;border:none;color:#94a1b2;cursor:pointer;font-size:.8rem;padding:4px 8px;border-radius:6px}
+.hh3 button:hover{color:#e0e0e0;background:#1a1a2e}
+.hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px}
+.hi{text-align:center;cursor:pointer;transition:transform .15s}
+.hi:hover{transform:scale(1.05)}
+.hsw{width:100%;aspect-ratio:1;border-radius:8px;margin-bottom:4px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.hi .hl{font-size:.65rem;color:#94a1b2;font-family:monospace}
+.empty{color:#94a1b2;font-size:.85rem;text-align:center;padding:20px 0}
+footer{text-align:center;padding:20px;color:#94a1b2;font-size:.75rem;margin-top:auto}
+#res{display:none}
+@media(max-width:600px){
+h1{font-size:1.5rem}.irow{flex-direction:column}.irow input[type="text"]{min-width:auto;width:100%}.btn{width:100%}.preview{height:120px}.sgrid{grid-template-columns:repeat(auto-fill,minmax(110px,1fr))}.hgrid{grid-template-columns:repeat(auto-fill,minmax(60px,1fr))}
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>&#127912; AI Color Name</h1>
+<p class="sub">Enter a HEX or RGB color to find its closest name</p>
+<div class="card">
+<div class="irow">
+<input type="color" id="cp" value="#7f5af0" aria-label="Color picker">
+<input type="text" id="ci" placeholder="#7f5af0 or rgb(127,90,240)" aria-label="Color value">
+<button class="btn" onclick="identify()">Identify</button>
+</div>
+</div>
+<div class="card" id="res">
+<div class="preview" id="prev"><div class="lbl"><span id="lh"></span><span id="lr"></span></div></div>
+<div class="rname" id="rn"></div>
+<div class="rhex" id="rh"></div>
+<div class="rmeta" id="rm"></div>
+<h3 class="simh3">Similar Colors</h3>
+<div class="sgrid" id="sg"></div>
+</div>
+<div class="card">
+<div class="hh3"><span>History</span><button onclick="clearH()">Clear</button></div>
+<div id="hg" class="hgrid"></div>
+</div>
+</div>
+<footer>AI Color Name &mdash; CSS Named Colors + Pantone</footer>
+<script>
+const C={
+aliceblue:[240,248,255],antiquewhite:[250,235,215],aqua:[0,255,255],aquamarine:[127,255,212],azure:[240,255,255],
+beige:[245,245,220],bisque:[255,228,196],black:[0,0,0],blanchedalmond:[255,235,205],blue:[0,0,255],
+blueviolet:[138,43,226],brown:[165,42,42],burlywood:[222,184,135],cadetblue:[95,158,160],chartreuse:[127,255,0],
+chocolate:[210,105,30],coral:[255,127,80],cornflowerblue:[100,149,237],cornsilk:[255,248,220],crimson:[220,20,60],
+cyan:[0,255,255],darkblue:[0,0,139],darkcyan:[0,139,139],darkgoldenrod:[184,134,11],darkgray:[169,169,169],
+darkgreen:[0,100,0],darkkhaki:[189,183,107],darkmagenta:[139,0,139],darkolivegreen:[85,107,47],darkorange:[255,140,0],
+darkorchid:[153,50,204],darkred:[139,0,0],darksalmon:[233,150,122],darkseagreen:[143,188,143],darkslateblue:[72,61,139],
+darkslategray:[47,79,79],darkturquoise:[0,206,209],darkviolet:[148,0,211],deeppink:[255,20,147],deepskyblue:[0,191,255],
+dimgray:[105,105,105],dodgerblue:[30,144,255],firebrick:[178,34,34],floralwhite:[255,250,240],forestgreen:[34,139,34],
+fuchsia:[255,0,255],gainsboro:[220,220,220],ghostwhite:[248,248,255],gold:[255,215,0],goldenrod:[218,165,32],
+gray:[128,128,128],green:[0,128,0],greenyellow:[173,255,47],honeydew:[240,255,240],hotpink:[255,105,180],
+indianred:[205,92,92],indigo:[75,0,130],ivory:[255,255,240],khaki:[240,230,140],lavender:[230,230,250],
+lavenderblush:[255,240,245],lawngreen:[124,252,0],lemonchiffon:[255,250,205],lightblue:[173,216,230],lightcoral:[240,128,128],
+lightcyan:[224,255,255],lightgoldenrodyellow:[250,250,210],lightgray:[211,211,211],lightgreen:[144,238,144],lightpink:[255,182,193],
+lightsalmon:[255,160,122],lightseagreen:[32,178,170],lightskyblue:[135,206,250],lightslategray:[119,136,153],lightsteelblue:[176,196,222],
+lightyellow:[255,255,224],lime:[0,255,0],limegreen:[50,205,50],linen:[250,240,230],magenta:[255,0,255],
+maroon:[128,0,0],mediumaquamarine:[102,205,170],mediumblue:[0,0,205],mediumorchid:[186,85,211],mediumpurple:[147,111,219],
+mediumseagreen:[60,179,113],mediumslateblue:[123,104,238],mediumspringgreen:[0,250,154],mediumturquoise:[72,209,204],mediumvioletred:[199,21,133],
+midnightblue:[25,25,112],mintcream:[245,255,250],mistyrose:[255,228,225],moccasin:[255,228,181],navajowhite:[255,222,173],
+navy:[0,0,128],oldlace:[253,245,230],olive:[128,128,0],olivedrab:[107,142,35],orange:[255,165,0],
+orangered:[255,69,0],orchid:[218,112,214],palegoldenrod:[238,232,170],palegreen:[152,251,152],paleturquoise:[175,238,238],
+palevioletred:[219,112,147],papayawhip:[255,239,213],peachpuff:[255,218,185],peru:[205,133,63],pink:[255,192,203],
+plum:[221,160,221],powderblue:[176,224,230],purple:[128,0,128],rebeccapurple:[102,51,153],red:[255,0,0],
+rosybrown:[188,143,143],royalblue:[65,105,225],saddlebrown:[139,69,19],salmon:[250,128,114],sandybrown:[244,164,96],
+seagreen:[46,139,87],seashell:[255,245,238],sienna:[160,82,45],silver:[192,192,192],skyblue:[135,206,235],
+slateblue:[106,90,205],slategray:[112,128,144],snow:[255,250,250],springgreen:[0,255,127],steelblue:[70,130,180],
+tan:[210,180,140],teal:[0,128,128],thistle:[216,191,216],tomato:[255,99,71],turquoise:[64,224,208],
+violet:[238,130,238],wheat:[245,222,179],white:[255,255,255],whitesmoke:[245,245,245],yellow:[255,255,0],yellowgreen:[154,205,50]
+};
+const P={
+"Living Coral":[255,111,97],"Ultra Violet":[107,91,149],"Greenery":[136,176,75],"Rose Quartz":[247,202,201],"Serenity":[145,168,208],
+"Marsala":[150,79,76],"Radiiant Orchid":[181,101,167],"Emerald":[0,155,119],"Tangerine Tango":[221,65,36],"Honeysuckle":[214,80,118],
+"Turquoise":[69,184,172],"Mimosa":[239,192,80],"Blue Iris":[91,94,166],"Chili Pepper":[155,27,48],"Sand Dollar":[222,205,178],
+"Tigerlily":[225,93,68],"Fuchsia Rose":[195,68,122],"True Red":[188,36,60],"Cerulean Blue":[152,180,212],"Classic Blue":[15,76,129],
+"Illuminating":[245,223,77],"Ultimate Gray":[147,149,151],"Very Peri":[102,103,171],"Viva Magenta":[190,52,85],"Peach Fuzz":[255,190,152],
+"Mocha Mousse":[165,120,96],"Pale Dogwood":[237,205,194],"Flame":[242,85,44],"Pink Yarrow":[206,32,121],"Niagara":[84,134,163],
+"Lapis Blue":[0,75,141],"Primrose Yellow":[246,209,70],"Hazelnut":[207,176,149],"Kale":[90,114,71],"Riverside":[76,109,156],
+"Airy Blue":[124,175,196],"Sharkskin":[131,132,135],"Aurora Red":[185,56,68],"Warm Sand":[196,172,150],"Cognac":[150,78,44],
+"Toffee":[117,79,54],"Cashmere Blue":[128,152,176],"Sargasso Sea":[72,75,106],"Tofu":[234,225,208],"Almond Buff":[209,183,148],
+"Quiet Gray":[188,187,183],"Vanilla Custard":[243,224,167],"Mango Mojito":[218,169,69],"Terrarium Moss":[97,110,64]
+};
+const ALL={};
+for(const[n,v]of Object.entries(C))ALL[n]={rgb:v,src:"CSS"};
+for(const[n,v]of Object.entries(P))ALL[n]={rgb:v,src:"Pantone"};
+function dist(a,b){return Math.sqrt((a[0]-b[0])**2+(a[1]-b[1])**2+(a[2]-b[2])**2)}
+function hex2rgb(h){h=h.replace('#','');if(h.length===3)h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]}
+function rgb2hex(r,g,b){return'#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('')}
+function parseColor(s){s=s.trim().toLowerCase();let m;if(m=s.match(/^#?([0-9a-f]{3}|[0-9a-f]{6})$/i))return hex2rgb(m[0]);if(m=s.match(/^rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/))return[+m[1],+m[2],+m[3]];if(m=s.match(/^(\d+)\s*,\s*(\d+)\s*,\s*(\d+)$/))return[+m[1],+m[2],+m[3]];return null}
+function findClosest(rgb,count=5){const results=[];for(const[name,info]of Object.entries(ALL)){results.push({name,rgb:info.rgb,src:info.src,dist:dist(rgb,info.rgb)})}results.sort((a,b)=>a.dist-b.dist);return results.slice(0,count)}
+function luminance(r,g,b){return(0.299*r+0.587*g+0.114*b)/255}
+function textColor(r,g,b){return luminance(r,g,b)>0.5?'#1a1a2e':'#ffffff'}
+
+let history=JSON.parse(localStorage.getItem('colorHistory')||'[]');
+
+function identify(hexVal){
+  const ci=document.getElementById('ci');
+  const input=hexVal||ci.value;
+  const rgb=parseColor(input);
+  if(!rgb){ci.style.borderColor='#e74c3c';setTimeout(()=>ci.style.borderColor='#0f3460',1500);return}
+  const hex=rgb2hex(...rgb);
+  ci.value=hex;
+  document.getElementById('cp').value=hex;
+  const matches=findClosest(rgb,6);
+  const best=matches[0];
+  const prev=document.getElementById('prev');
+  prev.style.background=hex;
+  document.getElementById('lh').textContent=hex.toUpperCase();
+  document.getElementById('lr').textContent=`rgb(${rgb.join(', ')})`;
+  prev.querySelector('.lbl').style.color=textColor(...rgb);
+  document.getElementById('rn').textContent=best.name;
+  document.getElementById('rn').style.color=hex;
+  const exactMatch=best.dist===0;
+  document.getElementById('rh').textContent=exactMatch?'Exact match!':hex.toUpperCase()+' ≈ '+rgb2hex(...best.rgb).toUpperCase();
+  const rm=document.getElementById('rm');
+  rm.innerHTML='';
+  rm.innerHTML=`<span class="tag">${best.src}</span><span class="tag">Distance: ${best.dist.toFixed(1)}</span><span class="tag">RGB: ${rgb.join(', ')}</span>`;
+  const sg=document.getElementById('sg');
+  sg.innerHTML='';
+  matches.slice(1).forEach(m=>{
+    const c=document.createElement('div');c.className='sc';
+    c.onclick=()=>{ci.value=rgb2hex(...m.rgb);identify()};
+    c.innerHTML=`<div class="ss" style="background:${rgb2hex(...m.rgb)}"></div><div class="si"><div class="n">${m.name}</div><div class="h">${rgb2hex(...m.rgb)}</div><div class="d">Δ ${m.dist.toFixed(1)}</div></div>`;
+    sg.appendChild(c);
+  });
+  document.getElementById('res').style.display='block';
+  addHistory(hex,best.name);
+}
+
+function addHistory(hex,name){
+  history=history.filter(h=>h.hex!==hex);
+  history.unshift({hex,name,time:Date.now()});
+  if(history.length>20)history=history.slice(0,20);
+  localStorage.setItem('colorHistory',JSON.stringify(history));
+  renderHistory();
+}
+function clearH(){history=[];localStorage.removeItem('colorHistory');renderHistory()}
+function renderHistory(){
+  const hg=document.getElementById('hg');
+  if(!history.length){hg.innerHTML='<div class="empty">No colors yet</div>';return}
+  hg.innerHTML='';
+  history.forEach(h=>{
+    const d=document.createElement('div');d.className='hi';
+    d.onclick=()=>{document.getElementById('ci').value=h.hex;identify()};
+    const rgb=hex2rgb(h.hex);
+    d.innerHTML=`<div class="hsw" style="background:${h.hex}"></div><div class="hl">${h.hex}</div>`;
+    hg.appendChild(d);
+  });
+}
+
+document.getElementById('cp').addEventListener('input',e=>{document.getElementById('ci').value=e.target.value;identify()});
+document.getElementById('ci').addEventListener('keydown',e=>{if(e.key==='Enter')identify()});
+renderHistory();
+</script>
+<script src="https://alwingulla.com/88/tag.min.js" data-zone="130647" async data-cfasync="false"></script>
+</body>
+</html>
